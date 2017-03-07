@@ -1,20 +1,20 @@
 # Muxi-CS102
-CS102---  教材：《深入理解计算机系统》(Randal E.Bryant) CSAPP
-第一，二周：
+CS102---  教材：《深入理解计算机系统》(Randal E.Bryant) CSAPP </br>
+第一，二周：</br>
 
-***********************
-The CS:APP Data Lab
-Directions to Students
+
+## The CS:APP Data Lab
+## Directions to Students
 ***********************
 
 Your goal is to modify your copy of bits.c so that it passes all the
 tests in btest without violating any of the coding guidelines.
 
 
-*********
-0. Files:
-*********
 
+### Files:
+
+```
 Makefile	- Makes btest, fshow, and ishow
 README		- This file
 bits.c		- The file you will be modifying and handing in
@@ -29,10 +29,11 @@ driver.pl*	- Driver program that uses btest and dlc to autograde bits.c
 Driverhdrs.pm   - Header file for optional "Beat the Prof" contest
 fshow.c		- Utility for examining floating-point representations
 ishow.c		- Utility for examining integer representations
+```
 
-***********************************************************
-1. Modifying bits.c and checking it for compliance with dlc
-***********************************************************
+
+### Modifying bits.c and checking it for compliance with dlc
+
 
 IMPORTANT: Carefully read the instructions in the bits.c file before
 you start. These give the coding rules that you will need to follow if
@@ -54,9 +55,9 @@ causes dlc to print counts of the number of operators used by each function.
 Once you have a legal solution, you can test it for correctness using
 the ./btest program.
 
-*********************
-2. Testing with btest
-*********************
+
+### Testing with btest
+
 
 The Makefile in this directory compiles your version of bits.c with
 additional code to create a program (or test harness) named btest.
@@ -83,9 +84,10 @@ it prints out the test that failed, the incorrect result, and the
 expected result, and then terminates the testing for that function.
 
 Here are the command line options for btest:
-
+```
   unix> ./btest -h
   Usage: ./btest [-hg] [-r <n>] [-f <name> [-1|-2|-3 <val>]*] [-T <time limit>]
+
     -1 <val>  Specify first function argument
     -2 <val>  Specify second function argument
     -3 <val>  Specify third function argument
@@ -94,9 +96,11 @@ Here are the command line options for btest:
     -h        Print this message
     -r <n>    Give uniform weight of n for all problems
     -T <lim>  Set timeout limit to lim
+```
+
 
 Examples:
-
+```
   Test all functions for correctness and print out error messages:
   unix> ./btest
 
@@ -111,10 +115,10 @@ Examples:
 
 Btest does not check your code for compliance with the coding
 guidelines.  Use dlc to do that.
+```
 
-*******************
-3. Helper Programs
-*******************
+### Helper Programs
+
 
 We have included the ishow and fshow programs to help you decipher
 integer and floating point representations respectively. Each takes a
@@ -123,7 +127,7 @@ single decimal or hex number as an argument. To build them type:
     unix> make
 
 Example usages:
-
+```
     unix> ./ishow 0x27
     Hex = 0x00000027,	Signed = 39,	Unsigned = 39
 
@@ -139,3 +143,4 @@ Example usages:
     Floating point value 2.131829405e-38
     Bit Representation 0x00e822bb, sign = 0, exponent = 0x01, fraction = 0x6822bb
     Normalized.  +1.8135598898 X 2^(-126)
+```
