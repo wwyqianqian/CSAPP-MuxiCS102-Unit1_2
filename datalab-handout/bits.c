@@ -221,15 +221,19 @@ int tmin(void) {
  *  n-bit, two's complement integer.
  *   1 <= n <= 32
  *   Examples: fitsBits(5,3) = 0, fitsBits(-4,3) = 1
+ 如果x可以表示为n位二进制补码形式,则返回1，否则返回0
  *   Legal ops: ! ~ & ^ | + << >>
  *   Max ops: 15
  *   Rating: 2
  */
 int fitsBits(int x, int n) {
-  return 2;
+    int r, c;
+    c = 33 + ~n;//计算在使用n个低阶位之后剩余多少高阶位。
+    r = !(((x << c) >> c) ^x);//用与x的符号位相同的值填高阶位。
+    return r;
 }
 /*
- * divpwr2 - Compute x/(2^n), for 0 <= n <= 30
+ * divpwr2 - Compute 算 x/(2^n), for 0 <= n <= 30
  *  Round toward zero
  *   Examples: divpwr2(15,1) = 7, divpwr2(-33,4) = -2
  *   Legal ops: ! ~ & ^ | + << >>
@@ -237,7 +241,10 @@ int fitsBits(int x, int n) {
  *   Rating: 2
  */
 int divpwr2(int x, int n) {
-    return 2;
+  int mask = (1 << n) + ~0;// Use & operator on mask and sign bit of x
+  int equalizer = (x >> 31) & mask;// Adds 1 if x was originally negative
+                                  // Adds 0 if x was originally positive
+  return (x + equalizer) >> n;
 }
 /*
  * negate - return -x
@@ -247,20 +254,23 @@ int divpwr2(int x, int n) {
  *   Rating: 2
  */
 int negate(int x) {
-  return 2;
+  return ~x + 1;
 }
 /*
  * isPositive - return 1 if x > 0, return 0 otherwise
+ x>0返回1,x<=0返回0
  *   Example: isPositive(-1) = 0.
  *   Legal ops: ! ~ & ^ | + << >>
  *   Max ops: 8
  *   Rating: 3
  */
 int isPositive(int x) {
-  return 2;
+  int m = x >> 31;//0,1;
+  return !m & (!!x);//(!!x)判断x是否不为零
 }
 /*
  * isLessOrEqual - if x <= y  then return 1, else return 0
+ x<=y返回1否则返回0
  *   Example: isLessOrEqual(4,5) = 1.
  *   Legal ops: ! ~ & ^ | + << >>
  *   Max ops: 24
