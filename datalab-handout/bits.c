@@ -165,15 +165,12 @@ int getByte(int x, int n) {
  *   Max ops: 20
  *   Rating: 3
  */
-
-
   //拓展：unsigned int a, b, mask = 0x0000ff00;
   //a = 0x12345678;
   //b = (a & mask) >> 8; /* 0x00000056 */
 //即 b = (a >> 8) & ~(~0 << 8);
 
-
-
+  //拓展完毕。本题：
   //0x8765432 & ~(10000000000000000000000000000000) >> n << 1
   //0x8765432 & ~(11111000000000000000000000000000) << 1    注意：右移，负数在前面填1
   //0x8765432 & ~(1111000000000000000000000000000)
@@ -181,17 +178,19 @@ int getByte(int x, int n) {
                 //   0   8   7   6   5   4   3   2
 int logicalShift(int x, int n) {
   return (x >> n) & (~((~0 << 31) >> n << 1));
-
 }
 /*
  * bitCount - returns count of number of 1's in word
- *   Examples: bitCount(5) = 2, bitCount(7) = 3
+ *   Examples: bitCount(5) 101= 2, bitCount(7) 111 = 3
  *   Legal ops: ! ~ & ^ | + << >>
  *   Max ops: 40
  *   Rating: 4
  */
+ //好像不让for···尴尬
 int bitCount(int x) {
-  return 2;
+  for (count = 0; x; x >>= 1)
+     count += x & 0x01;
+  return count;
 }
 /*
  * bang - Compute !x without using !
@@ -200,8 +199,11 @@ int bitCount(int x) {
  *   Max ops: 12
  *   Rating: 4
  */
+
+ //-x  就是  ~x + 1 ，"补码 == 反码 + 1";
 int bang(int x) {
-  return 2;
+  return ((x >> 31) | ((~x + 1) >> 31)) + 1;
+
 }
 /*
  * tmin - return minimum two's complement integer
@@ -209,8 +211,10 @@ int bang(int x) {
  *   Max ops: 4
  *   Rating: 1
  */
+
+
 int tmin(void) {
-  return 2;
+  return 1 << 31;
 }
 /*
  * fitsBits - return 1 if x can be represented as an
