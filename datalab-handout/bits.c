@@ -277,7 +277,12 @@ int isPositive(int x) {
  *   Rating: 3
  */
 int isLessOrEqual(int x, int y) {
-  return 2;
+  int m = (~x + 1) + y;
+  int p = !!(x>>31);
+  int q = !!(y>>31);
+
+  return (!(m>>31)&(!(p^q))) | (p&!q);
+
 }
 /*
  * ilog2 - return floor(log base 2 of x), where x > 0
@@ -292,6 +297,7 @@ int ilog2(int x) {
 /*
  * float_neg - Return bit-level equivalent of expression -f for
  *   floating point argument f.
+ 返回和浮点数参数-f相等的二进制数，返回参数本身是NaN
  *   Both the argument and result are passed as unsigned int's, but
  *   they are to be interpreted as the bit-level representations of
  *   single-precision floating point values.
@@ -301,7 +307,14 @@ int ilog2(int x) {
  *   Rating: 2
  */
 unsigned float_neg(unsigned uf) {
- return 2;
+  unsigned temp;
+
+   temp = uf ^ 0x80000000;
+
+   int t = uf & 0x7fffffff;
+   if(t > 0x7f800000)
+     return uf;
+   return temp;
 }
 /*
  * float_i2f - Return bit-level equivalent of expression (float) x
@@ -327,5 +340,11 @@ unsigned float_i2f(int x) {
  *   Rating: 4
  */
 unsigned float_twice(unsigned uf) {
-  return 2;
+  if((uf & 0x7F800000) == 0)
+    return (uf << 1) | (0x80000000 & uf);
+
+  else if((uf & 0x7fffffff) >= 0x7f800000)
+    return uf;
+  return uf + 0x00800000;
+
 }
