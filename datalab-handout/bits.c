@@ -177,7 +177,7 @@ int getByte(int x, int n) {
   //0x8765432 & ~(0000111111111111111111111111111)
                 //   0   8   7   6   5   4   3   2
 int logicalShift(int x, int n) {
-  return (x >> n) & (~((~0 << 31) >> n << 1));
+  return (x >> n) & (~((1<<31) >> n << 1));
 }
 /*
  * bitCount - returns count of number of 1's in word
@@ -187,11 +187,27 @@ int logicalShift(int x, int n) {
  *   Rating: 4
  */
  //好像不让for···尴尬
-int bitCount(int x) {
-  for (count = 0; x; x >>= 1)
-     count += x & 0x01;
-  return count;
-}
+ int bitCount(int x) {
+
+   int temp1 ;
+   int temp2 ;
+   int res ;
+
+   temp1 = 0x01|(0x01<<8)|(0x01<<16)|(0x01<<24) ;
+   temp2 = x&temp1 ;
+   temp2 += temp1&(x>>1) ;
+   temp2 += temp1&(x>>2) ;
+   temp2 += temp1&(x>>3) ;
+   temp2 += temp1&(x>>4) ;
+   temp2 += temp1&(x>>5) ;
+   temp2 += temp1&(x>>6) ;
+   temp2 += temp1&(x>>7) ;
+
+   temp2 = temp2 + (temp2>>16) ;
+   temp2 = temp2 + (temp2>>8)  ;
+   res = 0xff&temp2 ;
+   return res ;
+ }
 /*
  * bang - Compute !x without using !
  *   Examples: bang(3) = 0, bang(0) = 1
@@ -226,12 +242,13 @@ int tmin(void) {
  *   Max ops: 15
  *   Rating: 2
  */
-int fitsBits(int x, int n) {
-    int r, c;
-    c = 33 + ~n;//计算在使用n个低阶位之后剩余多少高阶位。
-    r = !(((x << c) >> c) ^x);//用与x的符号位相同的值填高阶位。
-    return r;
-}
+ int fitsBits(int x, int n) {
+   int c = ~n + 33;
+   int changedX = x << c;
+   int changedY = changedX>> c;
+
+   return !(changedY ^ x);
+ }
 /*
  * divpwr2 - Compute 算 x/(2^n), for 0 <= n <= 30
  *  Round toward zero
@@ -291,9 +308,16 @@ int isLessOrEqual(int x, int y) {
  *   Max ops: 90
  *   Rating: 4
  */
-int ilog2(int x) {
-  return 2;
-}
+ int ilog2(int x) {
+   int bitsNumber = 0;
+   bitsNumber = (!!(x >> 16)) << 4;
+   bitsNumber = bitsNumber + (!!(x >> (bitsNumber + 8)) << 3);
+   bitsNumber = bitsNumber + (!!(x >> (bitsNumber + 4)) << 2);
+   bitsNumber = bitsNumber + (!!(x >> (bitsNumber + 2)) << 1);
+   bitsNumber = bitsNumber + (!!(x >> (bitsNumber + 1)));
+
+   return bitsNumber;
+ }
 /*
  * float_neg - Return bit-level equivalent of expression -f for
  *   floating point argument f.
@@ -325,9 +349,24 @@ unsigned float_neg(unsigned uf) {
  *   Max ops: 30
  *   Rating: 4
  */
-unsigned float_i2f(int x) {
-  return 2;
-}
+ unsigned float_i2f(int x) {
+   unsigned s = 0, exp = 31, frac = 0, d = 0;
+   if (x == 0x00000000u) return 0x00000000u;
+   if (x & 0x80000000u) { s = 0x80000000u; x = -x; }
+   while (1) {
+     if (x & 0x80000000u) break;
+     //exp记录最高位的位置
+     exp -= 1;
+     x <<= 1;
+   }
+   //最后舍掉的8位若最高位为1且低七位仍有数，要进位
+   if ((x & 0x000001ff) == 0x180) d = 1;
+   else if ((x & 0xff) > 0x80) d = 1;
+   //franc记录尾数
+   frac = ((x & 0x7fffffffu) >> 8) + d;
+
+   return s + ((exp + 127) << 23) + frac;
+ }
 /*
  * float_twice - Return bit-level equivalent of expression 2*f for
  *   floating point argument f.
